@@ -1,6 +1,3 @@
-
-
-
 class Sub():
 	def __init__(self, version, language, impaired, link):
 		self.version = version

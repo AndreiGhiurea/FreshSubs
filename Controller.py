@@ -1,7 +1,6 @@
 from Domain import Sub, Media
-import requests
+from requests import get
 from bs4 import BeautifulSoup
-import requests
 
 class CtrlEx(Exception):
 	pass
@@ -12,7 +11,7 @@ class Controller():
 	def scrapMedia(self, name):
 		found = []
 		searchUrl = 'http://www.addic7ed.com/search.php?search=' + str(name) + '&Submit=Search'
-		p = requests.get(searchUrl)
+		p = get(searchUrl)
 		soup = BeautifulSoup(p.text,'html.parser')
 		for a in soup.find_all('a', debug=True):
 			found.append(Media(a.text, "http://www.addic7ed.com/" + a['href']))
@@ -23,7 +22,7 @@ class Controller():
 
 	def scrapSubs(self, link, lang):
 		found = []
-		p = requests.get(link)
+		p = get(link)
 		soup = BeautifulSoup(p.text, 'html.parser')
 
 		for div in soup.find_all('div', id='container95m'):
@@ -52,7 +51,7 @@ class Controller():
 
 	def downloadSub(self, name, link):
 		headers = {'User-Agent': 'Mozilla/6.0'}
-		r=requests.get(link,headers)
+		r=get(link,headers)
 		with open(name+".srt", "wb") as archive:
 			archive.write(r.content)
 

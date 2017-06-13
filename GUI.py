@@ -1,9 +1,11 @@
-import sys
-from PyQt5 import QtGui, QtCore, QtWidgets
-from PyQt5.QtWidgets import QMessageBox
+from sys import exit, argv
+from PyQt5.QtWidgets import QMessageBox, QListWidgetItem, QWidget, QVBoxLayout, QLineEdit, QComboBox, QHBoxLayout, QListWidget, QPushButton, QApplication
+from PyQt5.QtGui import QIcon
+from PyQt5.QtCore import Qt
 from Controller import Controller, CtrlEx
 
-class CustomLine(QtWidgets.QListWidgetItem):
+
+class CustomLine(QListWidgetItem):
 	def __init__(self, name, link):
 		self.name = name
 		self.link = link
@@ -12,49 +14,49 @@ class CustomLine(QtWidgets.QListWidgetItem):
 	def getLink(self):
 		return self.link
 
-class MainWindow(QtWidgets.QWidget):
+class MainWindow(QWidget):
 	def __init__(self, ctrl):
 		super(MainWindow, self).__init__()
 		self.ctrl = ctrl
 		self.setGeometry(50,50,700,500)
 		self.setWindowTitle("FreshSubs")
-		self.setWindowIcon(QtGui.QIcon('fresh.png'))
+		self.setWindowIcon(QIcon('fresh.png'))
 		self.loadGUI()
 		
 	def loadGUI(self):
-		self.mainLayout = QtWidgets.QVBoxLayout()
+		self.mainLayout = QVBoxLayout()
 		self.setLayout(self.mainLayout)
 
-		self.searchBox = QtWidgets.QLineEdit()
+		self.searchBox = QLineEdit()
 		self.mainLayout.addWidget(self.searchBox)
 
-		self.languageBox = QtWidgets.QComboBox()
+		self.languageBox = QComboBox()
 		self.languageBox.addItem("English")
 		self.languageBox.addItem("Romanian")
 		self.languageBox.currentIndexChanged.connect(self.loadSubs)
 		self.mainLayout.addWidget(self.languageBox)
 
-		self.listWidget = QtWidgets.QWidget()
-		self.listLayout = QtWidgets.QHBoxLayout()
+		self.listWidget = QWidget()
+		self.listLayout = QHBoxLayout()
 		self.listWidget.setLayout(self.listLayout)
 		self.mainLayout.addWidget(self.listWidget)
 
-		self.epList = QtWidgets.QListWidget()
+		self.epList = QListWidget()
 		self.epList.selectionModel().selectionChanged.connect(self.loadSubs)
 		self.listLayout.addWidget(self.epList)
 
-		self.subsList = QtWidgets.QListWidget()
+		self.subsList = QListWidget()
 		self.listLayout.addWidget(self.subsList)
 
-		self.btnWidget = QtWidgets.QWidget()
-		self.btnLayout = QtWidgets.QHBoxLayout()
+		self.btnWidget = QWidget()
+		self.btnLayout = QHBoxLayout()
 		self.btnWidget.setLayout(self.btnLayout)
 		self.mainLayout.addWidget(self.btnWidget)
 
-		self.searchBtn = QtWidgets.QPushButton("Search", self)
+		self.searchBtn = QPushButton("Search", self)
 		self.searchBtn.clicked.connect(self.search_clicked)
 
-		self.downloadBtn = QtWidgets.QPushButton("Download", self)
+		self.downloadBtn = QPushButton("Download", self)
 		self.downloadBtn.clicked.connect(self.download_sub)
 
 		self.btnLayout.addWidget(self.searchBtn)
@@ -64,7 +66,7 @@ class MainWindow(QtWidgets.QWidget):
 
 	def loadSubs(self):
 		try:
-			QtWidgets.QApplication.setOverrideCursor(QtCore.Qt.WaitCursor)
+			QApplication.setOverrideCursor(Qt.WaitCursor)
 			if(self.epList.currentRow() >= 0):
 				self.subsList.clear()
 				self.subs = self.ctrl.scrapSubs(self.epList.currentItem().getLink(), self.languageBox.currentText())
@@ -74,11 +76,11 @@ class MainWindow(QtWidgets.QWidget):
 		except CtrlEx as ex:
 			QMessageBox.warning(self, 'Error', str(ex), QMessageBox.Ok)
 		finally:
-			QtWidgets.QApplication.restoreOverrideCursor()
+			QApplication.restoreOverrideCursor()
 
 	def search_clicked(self):
 		try:
-			QtWidgets.QApplication.setOverrideCursor(QtCore.Qt.WaitCursor)
+			QApplication.setOverrideCursor(Qt.WaitCursor)
 			self.epList.setCurrentRow(-1)
 			self.epList.clear()
 			self.subsList.clear()
@@ -89,11 +91,11 @@ class MainWindow(QtWidgets.QWidget):
 		except CtrlEx as ex:
 			QMessageBox.warning(self, 'Error', str(ex), QMessageBox.Ok)
 		finally:
-			QtWidgets.QApplication.restoreOverrideCursor()
+			QApplication.restoreOverrideCursor()
 
 	def download_sub(self):
 		try:
-			QtWidgets.QApplication.setOverrideCursor(QtCore.Qt.WaitCursor)
+			QApplication.setOverrideCursor(Qt.WaitCursor)
 			link = self.subsList.currentItem().getLink()
 			subName = self.epList.currentItem().text() + " - " + self.subsList.currentItem().text()
 			self.ctrl.downloadSub(subName, link)
@@ -101,9 +103,9 @@ class MainWindow(QtWidgets.QWidget):
 		except AttributeError as ex:
 			QMessageBox.warning(self, 'Error', str(ex), QMessageBox.Ok)
 		finally:
-			QtWidgets.QApplication.restoreOverrideCursor()
+			QApplication.restoreOverrideCursor()
 
-app = QtWidgets.QApplication(sys.argv)
+app = QApplication(argv)
 ctrl = Controller()
 GUI = MainWindow(ctrl)
-sys.exit(app.exec_())
+exit(app.exec_())
