@@ -4,6 +4,8 @@ from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import Qt
 from Controller import Controller, CtrlEx
 
+from threading import Thread
+
 
 class CustomLine(QListWidgetItem):
 	def __init__(self, name, link):
@@ -84,7 +86,7 @@ class MainWindow(QWidget):
 			self.epList.setCurrentRow(-1)
 			self.epList.clear()
 			self.subsList.clear()
-			self.found = ctrl.scrapMedia(self.searchBox.text())
+			self.found = self.ctrl.scrapMedia(self.searchBox.text())
 			for media in self.found:
 				item = CustomLine(media.getName(), media.getLink())
 				self.epList.addItem(item)
